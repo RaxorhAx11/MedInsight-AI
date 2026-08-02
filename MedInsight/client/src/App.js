@@ -18,15 +18,60 @@ const ActivityHistory = lazy(() => import("./components/Main/ActivityHistory"));
 function App() {
     const user = localStorage.getItem("token");
     const [showSplash, setShowSplash] = useState(() => {
-        const hasVisited = localStorage.getItem("medinsight_visited");
         const queryParams = new URLSearchParams(window.location.search);
-        const forceSplash = queryParams.get("splash") === "true";
-        return !hasVisited || forceSplash;
+        if (queryParams.get("splash") === "true") {
+            return true;
+        }
+
+        // Check if this is a browser reload/refresh
+        let isReload = false;
+        try {
+            const navs = performance.getEntriesByType("navigation");
+            if (navs.length > 0) {
+                isReload = navs[0].type === "reload";
+            } else {
+                isReload = window.performance && window.performance.navigation && window.performance.navigation.type === 1;
+            }
+        } catch (e) {
+            console.error("Error checking navigation type:", e);
+        }
+
+        const fromLogout = sessionStorage.getItem("medinsight_from_logout") === "true";
+        if (fromLogout) {
+            sessionStorage.removeItem("medinsight_from_logout");
+        }
+
+        // If it's a reload/refresh (and not triggered by logout), do not show splash
+        if (isReload && !fromLogout) {
+            return false;
+        }
+
+        const path = window.location.pathname;
+
+        // Do not show splash screen on signup page
+        if (path === "/signup") {
+            return false;
+        }
+
+        // If user is logged in, show splash if it's the first time dashboard loads in this session
+        if (user) {
+            const dashboardLoaded = sessionStorage.getItem("medinsight_dashboard_loaded") === "true";
+            if (path === "/") {
+                return !dashboardLoaded;
+            }
+            return false;
+        }
+
+        // If user is not logged in, show splash on visit to the login page (or any redirect to login)
+        return true;
     });
 
     useEffect(() => {
-        if (showSplash) {
-            localStorage.setItem("medinsight_visited", "true");
+        if (!showSplash) {
+            const user = localStorage.getItem("token");
+            if (user && window.location.pathname === "/") {
+                sessionStorage.setItem("medinsight_dashboard_loaded", "true");
+            }
         }
     }, [showSplash]);
 

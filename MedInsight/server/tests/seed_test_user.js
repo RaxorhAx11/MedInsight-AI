@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("../utils/envLoader");
 const connectDB = require("../db");
 
 const { User } = require("../models/user");

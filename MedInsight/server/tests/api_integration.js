@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("../utils/envLoader");
 const connectDB = require("../db");
 
 // Import and register all database schemas

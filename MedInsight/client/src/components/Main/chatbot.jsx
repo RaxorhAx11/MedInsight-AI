@@ -12,6 +12,7 @@ import BotResponse from "./BotResponse";
 import Navbar from "../Navbar";
 
 import {
+	ResponsiveContainer,
 	ComposedChart,
 	Line,
 	Area,
@@ -27,7 +28,7 @@ import apiurl from "../../config/api";
 function Chatbot() {
 	const [input, setInput] = useState("");
 	const [error, setError] = useState("");
-	const [showReportSummary, setShowReportSummary] = useState(true);
+	const [showReportSummary, setShowReportSummary] = useState(window.innerWidth > 768);
 	const [messages, setMessages] = useState([]);
 	const [conversations, setConversations] = useState([]);
 	const [conversationID, setConversationID] = useState("");
@@ -73,6 +74,9 @@ function Chatbot() {
 	const newChat = () => {
 		setConversationID(generateConversationID());
 		setMessages([]);
+		if (window.innerWidth <= 768) {
+			setShowReportSummary(false);
+		}
 	};
 
 	const chatClicks = async (conversationID) => {
@@ -84,6 +88,9 @@ function Chatbot() {
 			}));
 			setMessages(messages);
 			setConversationID(conversationID);
+			if (window.innerWidth <= 768) {
+				setShowReportSummary(false);
+			}
 		} catch (error) {
 			console.error("Error fetching conversation:", error);
 			setError("Error fetching conversation");
@@ -127,6 +134,8 @@ function Chatbot() {
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
+		sessionStorage.removeItem("medinsight_dashboard_loaded");
+		sessionStorage.setItem("medinsight_from_logout", "true");
 		// Reset authorization default header
 		delete axios.defaults.headers.common["Authorization"];
 		navigate("/login");
@@ -412,8 +421,9 @@ function Chatbot() {
 			{/* Navbar */}
 			<Navbar leftActions={
 				<div className={styles.button_nav_bar}>
-					<button className={styles.minimize_btn} onClick={toggleReportSummary}>
-						{showReportSummary ? "Hide Sidebar" : "Show Sidebar"}
+					<button className={styles.minimize_btn} onClick={toggleReportSummary} aria-label={showReportSummary ? "Hide Sidebar" : "Show Sidebar"}>
+						<FiMessageSquare />
+						<span className={styles.minimize_btn_text}>{showReportSummary ? "Hide Sidebar" : "Show Sidebar"}</span>
 					</button>
 					<button className={styles.new_chat_button} onClick={newChat} title="New Chat">
 						<FiPlus />
@@ -490,35 +500,35 @@ function Chatbot() {
 							{messages.map((message, index) =>
 								message.sender === "chart" ? (
 									<div key={index} className={styles.chart_message_wrapper}>
-										<ComposedChart
-											width={500}
-											height={280}
-											data={message.data}
-											margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
-										>
-											<CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-											<XAxis
-												dataKey="date"
-												tickFormatter={(date) => {
-													if (date === "01/01/2000" || date === "12/31/3000") return "";
-													const [month, , year] = date.split("/");
-													return `${month}/${year.slice(2)}`;
-												}}
-												stroke="#6b7280"
-												fontSize={11}
-											/>
-											<YAxis stroke="#6b7280" fontSize={11} />
-											<Tooltip content={renderTooltipWithoutRange} />
-											<Legend content={renderLegendWithoutRange} />
-											<Area
-												type="monotone"
-												dataKey="range"
-												fill="var(--color-success-bg)"
-												stroke="none"
-												connectNulls={true}
-											/>
-											<Line type="monotone" dataKey="value" stroke="var(--primary-brand)" strokeWidth={2} activeDot={{ r: 6 }} />
-										</ComposedChart>
+										<ResponsiveContainer width="100%" height={280}>
+											<ComposedChart
+												data={message.data}
+												margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+											>
+												<CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+												<XAxis
+													dataKey="date"
+													tickFormatter={(date) => {
+														if (date === "01/01/2000" || date === "12/31/3000") return "";
+														const [month, , year] = date.split("/");
+														return `${month}/${year.slice(2)}`;
+													}}
+													stroke="#6b7280"
+													fontSize={11}
+												/>
+												<YAxis stroke="#6b7280" fontSize={11} />
+												<Tooltip content={renderTooltipWithoutRange} />
+												<Legend content={renderLegendWithoutRange} />
+												<Area
+													type="monotone"
+													dataKey="range"
+													fill="var(--color-success-bg)"
+													stroke="none"
+													connectNulls={true}
+												/>
+												<Line type="monotone" dataKey="value" stroke="var(--primary-brand)" strokeWidth={2} activeDot={{ r: 6 }} />
+											</ComposedChart>
+										</ResponsiveContainer>
 									</div>
 								) : (
 									<div key={index} className={styles[`${message.sender}_message`]}>

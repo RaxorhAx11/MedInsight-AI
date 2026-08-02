@@ -144,6 +144,8 @@ function Navbar({ leftActions }) {
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
+		sessionStorage.removeItem("medinsight_dashboard_loaded");
+		sessionStorage.setItem("medinsight_from_logout", "true");
 		delete axios.defaults.headers.common["Authorization"];
 		navigate("/login");
 		window.location.reload();

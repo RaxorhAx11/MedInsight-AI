@@ -1,10 +1,4 @@
-const dotenv = require("dotenv");
-const envConfig = dotenv.config();
-if (envConfig.parsed) {
-	for (const k in envConfig.parsed) {
-		process.env[k] = envConfig.parsed[k];
-	}
-}
+require("./utils/envLoader");
 const { logger, overrideConsole } = require("./utils/logger");
 
 // Override console methods in production or if explicitly configured

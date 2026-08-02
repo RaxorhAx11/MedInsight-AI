@@ -453,6 +453,10 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+	.header {
+		padding: 20px;
+	}
+
 	.summary_grid {
 		grid-template-columns: 1fr;
 	}

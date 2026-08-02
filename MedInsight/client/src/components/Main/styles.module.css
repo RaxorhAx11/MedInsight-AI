@@ -842,8 +842,9 @@
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
 	padding: 20px;
-	max-width: 100%;
-	overflow-x: auto;
+	width: 100%;
+	max-width: 550px;
+	box-sizing: border-box;
 	box-shadow: var(--shadow-md);
 	animation: slideUp var(--transition-normal) forwards;
 }
@@ -1102,6 +1103,62 @@
 	.bot_message {
 		max-width: 85%;
 		font-size: 13.5px;
+	}
+
+	.stats_grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+	}
+
+	.main_content_split {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.dashboard_header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		padding: 24px;
+	}
+}
+
+@media (max-width: 576px) {
+	.stats_grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.dashboard_header {
+		padding: 20px;
+	}
+
+	.welcome_text h2 {
+		font-size: 22px;
+	}
+
+	.header_actions {
+		flex-direction: column;
+		width: 100%;
+		gap: 10px;
+	}
+
+	.primary_btn, .secondary_btn {
+		width: 100%;
+		justify-content: center;
+	}
+	
+	.minimize_btn_text {
+		display: none;
+	}
+	
+	.minimize_btn {
+		padding: 8px;
+		width: 34px;
+		height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 }
 

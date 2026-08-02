@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MedInsight AI",
+  "name": "MedInsight AI - Intelligent Biomarker-Based Medical Report Analyzer",
   "icons": [
     {
       "src": "favicon.ico",
