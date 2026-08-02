@@ -28,24 +28,23 @@ const createGenericReportRouter = (Model, reportTypeName) => {
                 .sort({ reportDate: -1 })
                 .lean();
 
-            if (!reports || reports.length === 0) {
-                return res.status(404).json({ message: `No ${reportTypeName} reports found for user` });
-            }
             // Build a map of the most recent biomarkers
             const biomarkerMap = new Map();
 
-            for (const report of reports) {
-                for (const biomarker of report.biomarkers) {
-                    if (!biomarkerMap.has(biomarker.name)) {
-                        biomarkerMap.set(biomarker.name, {
-                            name: biomarker.name,
-                            description: biomarker.description,
-                            result: biomarker.result,
-                            unit: biomarker.unit,
-                            referenceRange: biomarker.referenceRange,
-                            status: biomarker.status || getBiomarkerStatus(biomarker.result, biomarker.referenceRange),
-                            reportDate: report.reportDate,
-                        });
+            if (reports && reports.length > 0) {
+                for (const report of reports) {
+                    for (const biomarker of report.biomarkers) {
+                        if (!biomarkerMap.has(biomarker.name)) {
+                            biomarkerMap.set(biomarker.name, {
+                                name: biomarker.name,
+                                description: biomarker.description,
+                                result: biomarker.result,
+                                unit: biomarker.unit,
+                                referenceRange: biomarker.referenceRange,
+                                status: biomarker.status || getBiomarkerStatus(biomarker.result, biomarker.referenceRange),
+                                reportDate: report.reportDate,
+                            });
+                        }
                     }
                 }
             }

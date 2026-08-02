@@ -12,6 +12,21 @@ if (token) {
 	axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
 
+// Global request interceptor to dynamically inject the token into every outgoing request
+axios.interceptors.request.use(
+	(config) => {
+		const token = localStorage.getItem("token");
+		if (token) {
+			config.headers["Authorization"] = `Bearer ${token}`;
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+
 // Global interceptor to redirect to login on 401 Unauthorized
 axios.interceptors.response.use(
 	(response) => response,
