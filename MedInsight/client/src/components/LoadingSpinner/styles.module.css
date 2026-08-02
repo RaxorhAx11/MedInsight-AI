@@ -1,0 +1,97 @@
+.spinner_backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(248, 250, 252, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 99999;
+}
+
+:global(body.dark-theme) .spinner_backdrop {
+	background: rgba(9, 21, 46, 0.4);
+}
+
+.spinner_content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	padding: 24px 32px;
+	background: var(--bg-card);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-xl);
+}
+
+.spinner_circle_wrapper {
+	position: relative;
+	width: 72px;
+	height: 72px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.spinner_circle {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 3px solid var(--border-color);
+	border-top-color: var(--primary-brand);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+.logo_inner {
+	width: 44px;
+	height: 44px;
+	background: var(--bg-main);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: var(--shadow-sm);
+}
+
+.heart_icon {
+	font-size: 20px;
+	color: var(--primary-brand);
+	animation: heartbeat 1.5s infinite ease-in-out;
+}
+
+.loading_text {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-secondary);
+	letter-spacing: 0.2px;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes heartbeat {
+	0% {
+		transform: scale(1);
+	}
+	14% {
+		transform: scale(1.15);
+	}
+	28% {
+		transform: scale(1.05);
+	}
+	42% {
+		transform: scale(1.2);
+	}
+	70% {
+		transform: scale(1);
+	}
+}

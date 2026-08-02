@@ -1,0 +1,13 @@
+# Node modules
+/client/node_modules
+/node_modules
+/server/node_modules
+
+# Environment files
+/server/.env
+/MedInsight/.env
+/.env
+/MedInsight/MedInsight/.env
+
+# OS-specific files
+.DS_Store

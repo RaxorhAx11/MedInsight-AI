@@ -1,0 +1,508 @@
+.timeline_section {
+	width: 100%;
+	background: var(--bg-card);
+	backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: 32px;
+	box-shadow: var(--shadow-premium);
+	box-sizing: border-box;
+	margin-top: 8px;
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.timeline_section.animate_visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.timeline_header {
+	margin-bottom: 28px;
+	border-bottom: 1px dashed var(--border-color);
+	padding-bottom: 18px;
+}
+
+.header_title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.title_icon {
+	font-size: 20px;
+	color: var(--primary-brand);
+	animation: pulseIcon 3s infinite ease-in-out;
+}
+
+.header_title h3 {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--primary-deep);
+	margin: 0;
+}
+
+.header_subtitle {
+	font-size: 13.5px;
+	color: var(--text-secondary);
+	margin: 6px 0 0 0;
+}
+
+/* Empty State Styling */
+.empty_timeline {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 48px 24px;
+	text-align: center;
+}
+
+.empty_icon_wrapper {
+	width: 80px;
+	height: 80px;
+	border-radius: var(--radius-full);
+	background-color: var(--primary-light);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	box-shadow: inset 0 2px 6px rgba(37, 99, 235, 0.05);
+}
+
+.empty_icon {
+	font-size: 36px;
+	color: var(--primary-brand);
+	opacity: 0.8;
+}
+
+.empty_timeline h4 {
+	font-size: 17px;
+	font-weight: 600;
+	margin: 0 0 8px 0;
+	color: var(--text-primary);
+}
+
+.empty_timeline p {
+	font-size: 13.5px;
+	color: var(--text-muted);
+	max-width: 320px;
+	margin: 0 0 20px 0;
+	line-height: 1.5;
+}
+
+.upload_first_btn {
+	background-color: var(--primary-brand);
+	color: #ffffff;
+	border: none;
+	padding: 10px 22px;
+	border-radius: var(--radius-md);
+	font-weight: 600;
+	font-size: 13.5px;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+	transition: var(--transition-fast);
+}
+
+.upload_first_btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+	background-color: var(--primary-blue);
+}
+
+/* Timeline Layout */
+.timeline_container {
+	position: relative;
+	padding-left: 36px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+/* Timeline Line */
+.timeline_line {
+	position: absolute;
+	left: 13px;
+	top: 8px;
+	bottom: 84px;
+	width: 3px;
+	background: linear-gradient(to bottom, var(--primary-brand) 0%, var(--color-success) 40%, var(--color-warning) 70%, var(--border-color) 100%);
+	border-radius: var(--radius-full);
+	box-shadow: 0 0 8px rgba(37, 99, 235, 0.08);
+	transform-origin: top;
+	animation: drawLine 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes drawLine {
+	from {
+		transform: scaleY(0);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+
+/* Timeline Item & Animation */
+.timeline_item {
+	position: relative;
+	opacity: 0;
+	transform: translateY(20px);
+	animation: staggerFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation-delay: calc(var(--stagger-index) * 100ms);
+}
+
+@keyframes staggerFadeIn {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Timeline Markers */
+.timeline_marker {
+	position: absolute;
+	left: -36px;
+	top: 6px;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--radius-full);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	background-color: var(--bg-card-solid);
+	border: 2px solid var(--border-color);
+	font-size: 11px;
+	box-shadow: var(--shadow-sm);
+	transition: var(--transition-normal);
+}
+
+.marker_upload {
+	border-color: var(--primary-brand);
+	background-color: var(--primary-light);
+}
+
+.marker_analysis {
+	border-color: var(--color-success);
+	background-color: var(--color-success-bg);
+}
+
+.marker_alert {
+	border-color: var(--color-danger);
+	background-color: var(--color-danger-bg);
+}
+
+.marker_delete {
+	border-color: var(--text-muted);
+	background-color: var(--bg-main);
+}
+
+.marker_settings {
+	border-color: var(--color-info);
+	background-color: var(--color-info-bg);
+}
+
+.marker_profile {
+	border-color: var(--primary-blue);
+	background-color: var(--primary-light);
+}
+
+.icon_upload { color: var(--primary-brand); }
+.icon_analysis { color: var(--color-success); }
+.icon_alert { color: var(--color-danger); }
+.icon_delete { color: var(--text-muted); }
+.icon_settings { color: var(--color-info); }
+.icon_profile { color: var(--primary-brand); }
+.icon_default { color: var(--text-secondary); }
+
+/* Timeline Cards */
+.timeline_card {
+	background: var(--bg-card-solid);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: 16px 20px;
+	box-shadow: var(--shadow-sm);
+	cursor: pointer;
+	position: relative;
+	transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+	box-sizing: border-box;
+}
+
+.timeline_card:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-lg), 0 4px 20px rgba(9, 21, 46, 0.04);
+	border-color: rgba(37, 99, 235, 0.15);
+}
+
+/* Hover scales the icon marker */
+.timeline_item:hover .timeline_marker {
+	transform: scale(1.15);
+	box-shadow: 0 0 10px rgba(37, 99, 235, 0.15);
+}
+
+/* Card Header details */
+.card_header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 6px;
+}
+
+.card_title_area {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.activity_time {
+	font-size: 11px;
+	font-weight: 500;
+	color: var(--text-muted);
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.time_icon {
+	font-size: 10px;
+}
+
+.card_header h4 {
+	font-size: 15px;
+	font-weight: 600;
+	margin: 0;
+	color: var(--text-primary);
+}
+
+/* Status Badges */
+.status_badge {
+	font-size: 11px;
+	font-weight: 600;
+	padding: 3px 10px;
+	border-radius: var(--radius-full);
+	text-transform: capitalize;
+}
+
+.badge_completed {
+	background-color: var(--color-success-bg);
+	color: var(--color-success);
+	border: 1px solid var(--color-success-border);
+}
+
+.badge_warning {
+	background-color: var(--color-warning-bg);
+	color: var(--color-warning);
+	border: 1px solid var(--color-warning-border);
+}
+
+.badge_processing {
+	background-color: var(--color-info-bg);
+	color: var(--color-info);
+	border: 1px solid var(--color-info-border);
+	animation: pulseProcessing 1.5s infinite ease-in-out;
+}
+
+.badge_failed {
+	background-color: var(--color-danger-bg);
+	color: var(--color-danger);
+	border: 1px solid var(--color-danger-border);
+}
+
+.card_short_desc {
+	font-size: 13px;
+	color: var(--text-secondary);
+	margin: 0;
+	line-height: 1.5;
+}
+
+/* Expanded State details */
+.card_details {
+	max-height: 0;
+	overflow: hidden;
+	opacity: 0;
+	transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.details_visible {
+	max-height: 200px;
+	opacity: 1;
+	margin-top: 14px;
+}
+
+.details_divider {
+	width: 100%;
+	height: 1px;
+	background-color: var(--border-color);
+	margin-bottom: 12px;
+}
+
+.details_grid {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.details_info strong {
+	color: var(--text-secondary);
+}
+
+.type_label {
+	background-color: var(--primary-light);
+	color: var(--primary-brand);
+	padding: 1px 6px;
+	border-radius: var(--radius-sm);
+	font-weight: 700;
+	font-size: 9.5px;
+	margin-left: 6px;
+}
+
+.shortcut_btn, .shortcut_btn_alert {
+	margin-top: 12px;
+	padding: 6px 12px;
+	border-radius: var(--radius-sm);
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid;
+	transition: var(--transition-fast);
+}
+
+.shortcut_btn {
+	background-color: var(--primary-light);
+	color: var(--primary-brand);
+	border-color: rgba(37, 99, 235, 0.15);
+}
+
+.shortcut_btn:hover {
+	background-color: var(--primary-brand);
+	color: #ffffff;
+}
+
+.shortcut_btn_alert {
+	background-color: var(--color-warning-bg);
+	color: var(--color-warning);
+	border-color: var(--color-warning-border);
+}
+
+.shortcut_btn_alert:hover {
+	background-color: var(--color-warning);
+	color: #ffffff;
+}
+
+.card_toggle_indicator {
+	position: absolute;
+	bottom: 8px;
+	right: 14px;
+	font-size: 11px;
+	color: var(--text-muted);
+	opacity: 0.6;
+	transition: var(--transition-fast);
+}
+
+.timeline_card:hover .card_toggle_indicator {
+	opacity: 1;
+}
+
+/* Footer & View All Button */
+.timeline_footer {
+	display: flex;
+	justify-content: center;
+	margin-top: 8px;
+}
+
+.view_all_btn {
+	background-color: var(--bg-btn-secondary);
+	color: var(--text-secondary);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: 10px 24px;
+	font-weight: 600;
+	font-size: 13px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	box-shadow: var(--shadow-sm);
+	transition: var(--transition-normal);
+}
+
+.view_all_btn:hover {
+	background-color: var(--primary-light);
+	color: var(--primary-brand);
+	border-color: rgba(37, 99, 235, 0.2);
+	transform: translateY(-1.5px);
+	box-shadow: var(--shadow-md);
+}
+
+.view_all_btn:active {
+	transform: translateY(0);
+}
+
+.btn_icon {
+	font-size: 12px;
+}
+
+/* Loading Spinner */
+.timeline_loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60px 0;
+	gap: 12px;
+	color: var(--text-muted);
+}
+
+.spinner {
+	width: 28px;
+	height: 28px;
+	border: 3px solid rgba(37, 99, 235, 0.1);
+	border-radius: var(--radius-full);
+	border-top-color: var(--primary-brand);
+	animation: spinTimeline 0.8s linear infinite;
+}
+
+@keyframes spinTimeline {
+	to { transform: rotate(360deg); }
+}
+
+@keyframes pulseIcon {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes pulseProcessing {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.6; }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+	.timeline_section {
+		padding: 20px;
+	}
+	.timeline_container {
+		padding-left: 28px;
+	}
+	.timeline_line {
+		left: 11px;
+	}
+	.timeline_marker {
+		left: -28px;
+		width: 24px;
+		height: 24px;
+		font-size: 10px;
+	}
+	.card_header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+	.status_badge {
+		align-self: flex-start;
+	}
+}

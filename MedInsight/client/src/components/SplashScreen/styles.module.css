@@ -1,0 +1,223 @@
+.splash_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    opacity: 1;
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global(body.dark-theme) .splash_backdrop {
+    background: linear-gradient(135deg, #09152e 0%, #060d1d 100%);
+}
+
+.fade_out {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.03);
+}
+
+.splash_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    text-align: center;
+    max-width: 400px;
+    padding: 30px;
+}
+
+/* Central glowing logo circle */
+.logo_wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    box-shadow: var(--shadow-premium), 0 0 25px rgba(37, 99, 235, 0.15);
+    backdrop-filter: var(--glass-blur);
+    animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.heart_icon {
+    font-size: 48px;
+    color: var(--primary-brand);
+    filter: drop-shadow(0 0 12px rgba(37, 99, 235, 0.5));
+    animation: heartbeat 1.5s infinite ease-in-out;
+}
+
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.2);
+    }
+    28% {
+        transform: scale(1.05);
+    }
+    42% {
+        transform: scale(1.25);
+    }
+    70% {
+        transform: scale(1);
+    }
+}
+
+/* ECG Graph SVG */
+.ecg_container {
+    width: 220px;
+    height: 60px;
+    margin-top: -10px;
+    opacity: 0.9;
+}
+
+.ecg_line {
+    stroke-dasharray: 450;
+    stroke-dashoffset: 450;
+    animation: drawLine 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    stroke: var(--primary-brand);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.6));
+}
+
+@keyframes drawLine {
+    0% {
+        stroke-dashoffset: 450;
+    }
+    70% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 0.8;
+    }
+}
+
+/* Brand Details */
+.brand_details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand_title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: 2px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards, letterSpace 1.6s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards;
+}
+
+.logo_accent {
+    color: var(--primary-brand);
+    text-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+}
+
+.tagline {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.6s forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes letterSpace {
+    0% {
+        letter-spacing: -2px;
+    }
+    100% {
+        letter-spacing: 2px;
+    }
+}
+
+/* Progress bar & status */
+.loader_wrapper {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    margin-top: 10px;
+    animation: fadeIn 0.6s ease forwards 0.9s;
+}
+
+.progress_track {
+    width: 100%;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+}
+
+.progress_fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary-brand) 0%, var(--primary-blue) 100%);
+    border-radius: var(--radius-full);
+    animation: fillProgress 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 0 0 8px var(--primary-brand);
+}
+
+@keyframes fillProgress {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+.status_text {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    min-height: 18px;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}

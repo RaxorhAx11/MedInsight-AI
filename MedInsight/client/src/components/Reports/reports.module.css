@@ -1,0 +1,297 @@
+/* ==========================================================================
+   MedInsight AI - Reports Hub Stylesheet
+   ========================================================================== */
+
+.main_wrapper {
+	min-height: 100vh;
+	background-color: var(--bg-main);
+	color: var(--text-primary);
+	display: flex;
+	flex-direction: column;
+	animation: fadeIn var(--transition-normal) forwards;
+}
+
+/* Navbar */
+.navbar_container {
+	background-color: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	border-bottom: 1px solid var(--border-color);
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	box-shadow: var(--shadow-sm);
+}
+
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 14px 24px;
+	max-width: 1200px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.logo_container {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	transition: var(--transition-fast);
+}
+
+.logo_container:hover {
+	opacity: 0.9;
+}
+
+.heart_icon {
+	font-size: 22px;
+	color: var(--primary-brand);
+}
+
+.logo_container h1 {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--primary-deep);
+	margin: 0;
+	letter-spacing: -0.4px;
+}
+
+.logout_btn {
+	background-color: transparent;
+	color: var(--text-secondary);
+	border: 1px solid var(--border-color);
+	padding: 8px 16px;
+	border-radius: var(--radius-md);
+	font-weight: 600;
+	font-size: 13px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	transition: var(--transition-fast);
+}
+
+.logout_btn:hover {
+	background-color: var(--color-danger-bg);
+	border-color: var(--color-danger-border);
+	color: var(--color-danger);
+	transform: scale(1.02);
+}
+
+.logout_btn:active {
+	transform: scale(0.98);
+}
+
+/* Reports Container */
+.reports_container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 32px 24px;
+	box-sizing: border-box;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	animation: slideUp var(--transition-normal) forwards;
+}
+
+/* Header */
+.reports_header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: 26px 36px;
+	margin-bottom: 30px;
+	box-shadow: var(--shadow-md);
+}
+
+.header_left {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.back_btn {
+	background-color: var(--bg-btn-secondary);
+	border: 1px solid var(--border-color);
+	color: var(--text-secondary);
+	border-radius: 50%;
+	width: 42px;
+	height: 42px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-size: 14px;
+	transition: var(--transition-fast);
+	box-shadow: var(--shadow-sm);
+}
+
+.back_btn:hover {
+	background-color: var(--primary-light);
+	color: var(--primary-brand);
+	border-color: var(--primary-brand);
+	transform: scale(1.06);
+}
+
+.back_btn:active {
+	transform: scale(0.94);
+}
+
+.header_text h2 {
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--primary-deep);
+	margin: 0 0 6px 0;
+	letter-spacing: -0.5px;
+}
+
+.header_text p {
+	font-size: 14px;
+	color: var(--text-secondary);
+	margin: 0;
+	line-height: 1.5;
+}
+
+.primary_btn {
+	background-color: var(--primary-brand);
+	color: #ffffff;
+	border: none;
+	padding: 11px 20px;
+	border-radius: var(--radius-md);
+	font-weight: 600;
+	font-size: 13.5px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	transition: var(--transition-fast);
+	flex-shrink: 0;
+}
+
+.primary_btn:hover {
+	background-color: #1d4ed8;
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.primary_btn:active {
+	transform: scale(0.98) translateY(0);
+}
+
+/* Button Cards Container */
+.buttons_container {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24px;
+	width: 100%;
+}
+
+.button_card {
+	background-color: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: 36px;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+	box-shadow: var(--shadow-md);
+	display: flex;
+	align-items: flex-start;
+}
+
+.button_card:hover {
+	transform: translateY(-5px);
+	box-shadow: var(--shadow-premium);
+}
+
+.card_content {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.card_icon_wrapper {
+	width: 60px;
+	height: 60px;
+	border-radius: var(--radius-lg);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: var(--shadow-sm);
+}
+
+.button_card:hover .card_icon_wrapper {
+	transform: scale(1.1) rotate(2deg);
+}
+
+.card_icon {
+	font-size: 26px;
+}
+
+.card_text {
+	display: flex;
+	flex-direction: column;
+}
+
+.card_text h3 {
+	margin: 0 0 8px 0;
+	font-size: 19px;
+	font-weight: 700;
+	color: var(--primary-deep);
+	letter-spacing: -0.3px;
+}
+
+.card_text p {
+	margin: 0;
+	font-size: 14px;
+	color: var(--text-secondary);
+	line-height: 1.6;
+}
+
+/* Specific Card themes */
+.labreports_card .card_icon_wrapper {
+	background-color: var(--primary-light);
+	color: var(--primary-brand);
+	border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+.labreports_card:hover {
+	border-color: rgba(37, 99, 235, 0.25);
+	background-color: var(--bg-card-solid);
+}
+
+.results_card .card_icon_wrapper {
+	background-color: var(--color-success-bg);
+	color: var(--color-success);
+	border: 1px solid var(--color-success-border);
+}
+
+.results_card:hover {
+	border-color: rgba(16, 185, 129, 0.25);
+	background-color: var(--bg-card-solid);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.reports_header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 20px;
+	}
+	
+	.buttons_container {
+		grid-template-columns: 1fr;
+	}
+}

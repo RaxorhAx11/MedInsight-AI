@@ -1,0 +1,17 @@
+To: test_timeline_verify@example.com
+Subject: MedInsight AI Alert: Abnormal Biomarker Detected
+Date: 2026-08-01T03:53:37.999Z
+
+Dear Timeline Verifier,
+
+MedInsight AI has finished analyzing your recent Blood report dated 8/1/2026.
+
+We detected one or more biomarker values that fall outside the standard reference ranges:
+- Hemoglobin: 10.2 g/dL (Status: Low | Reference Range: 13.5 - 17.5 g/dL)
+- Cholesterol: 240 mg/dL (Status: High | Reference Range: 100 - 199 mg/dL)
+
+Please log in to your dashboard to review the complete reports and Ask AI consult history:
+http://localhost:3000/reports/results
+
+Regards,
+MedInsight AI Health Team

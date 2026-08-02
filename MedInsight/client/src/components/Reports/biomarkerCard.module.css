@@ -1,0 +1,225 @@
+/* ==========================================================================
+   MedInsight AI - BiomarkerCard Component Stylesheet
+   ========================================================================== */
+
+.card {
+	background-color: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: 22px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-premium);
+	border-color: rgba(37, 99, 235, 0.2);
+}
+
+/* Header & Status Section */
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+	gap: 12px;
+}
+
+.title_section {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: flex-start;
+	flex: 1;
+	min-width: 0;
+	min-height: 58px;
+}
+
+.title {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--primary-deep);
+	margin: 0;
+	letter-spacing: -0.2px;
+	line-height: 1.35;
+}
+
+.status_badge {
+	font-size: 10px;
+	font-weight: 700;
+	padding: 2.5px 7px;
+	border-radius: var(--radius-sm);
+	border: 1px solid transparent;
+	text-transform: capitalize;
+	line-height: 1;
+}
+
+/* Value Display */
+.value_section {
+	display: flex;
+	align-items: baseline;
+	gap: 3px;
+	text-align: right;
+	flex-shrink: 0;
+}
+
+.value {
+	font-size: 22px;
+	font-weight: 800;
+	color: var(--primary-deep);
+	letter-spacing: -0.5px;
+}
+
+.unit {
+	font-size: 13px;
+	color: var(--text-muted);
+	font-weight: 600;
+}
+
+/* Chart Progress Bar */
+.chartContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	height: 48px;
+	box-sizing: border-box;
+}
+
+.chart {
+	position: relative;
+	height: 8px;
+	background-color: var(--bg-progress-track, rgba(226, 232, 240, 0.5));
+	border-radius: var(--radius-full);
+	width: 100%;
+}
+
+.rangeBar {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: var(--primary-light); /* Standard background of ranges */
+	border-radius: var(--radius-full);
+	z-index: 1;
+}
+
+.indicatorDot {
+	position: absolute;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	border: 2.5px solid #ffffff;
+	z-index: 2;
+	transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rangeLabels {
+	display: flex;
+	justify-content: space-between;
+	font-size: 11px;
+	color: var(--text-muted);
+	font-weight: 600;
+}
+
+/* Footer Section */
+.footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-top: 14px;
+	border-top: 1px solid var(--border-color);
+	width: 100%;
+	margin-top: auto;
+}
+
+.updatedDate {
+	font-size: 11.5px;
+	color: var(--text-muted);
+	font-weight: 500;
+}
+
+.arrow_link {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--primary-brand);
+	transition: var(--transition-fast);
+}
+
+.card:hover .arrow_link {
+	color: var(--primary-blue);
+}
+
+.chevron {
+	font-size: 10px;
+	transition: transform var(--transition-fast);
+}
+
+.card:hover .chevron {
+	transform: translateX(3px);
+}
+
+.notMentionedMessage {
+	font-size: 11.5px;
+	color: var(--text-muted);
+	background-color: var(--bg-card-unavailable);
+	padding: 8px 12px;
+	border-radius: var(--radius-sm);
+	border: 1px dashed var(--border-color);
+	text-align: center;
+	font-weight: 600;
+	height: 48px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Styles for unavailable biomarkers */
+.card_unavailable {
+	opacity: 0.65;
+	background-color: var(--bg-card-unavailable);
+	border-color: var(--border-color);
+	box-shadow: none;
+}
+
+.card_unavailable:hover {
+	opacity: 0.85;
+	transform: translateY(-2px);
+	border-color: rgba(148, 163, 184, 0.3);
+	box-shadow: var(--shadow-sm);
+}
+
+.card_unavailable .title {
+	color: var(--text-muted);
+}
+
+.card_unavailable .value {
+	color: var(--text-muted);
+}
+
+.card_unavailable .unit {
+	color: var(--text-muted);
+}
+
+.card_unavailable .arrow_link {
+	color: var(--text-muted);
+}
+
+.card_unavailable:hover .arrow_link {
+	color: var(--text-secondary);
+}
