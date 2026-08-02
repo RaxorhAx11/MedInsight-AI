@@ -13,7 +13,10 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
 import ScrollReveal from "../ScrollReveal";
 
-const apiurl = process.env.REACT_APP_API_BASE_URL;
+const apiurl = (() => {
+	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
+	return base.endsWith("/api") ? base : `${base}/api`;
+})();
 
 const Results = () => {
     const [biomarkers, setBiomarkers] = useState([]);

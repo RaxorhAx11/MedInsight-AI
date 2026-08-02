@@ -19,7 +19,10 @@ import Navbar from "../Navbar";
 import ReportTimeline from "./ReportTimeline";
 import ScrollReveal from "../ScrollReveal";
 
-const apiurl = process.env.REACT_APP_API_BASE_URL;
+const apiurl = (() => {
+	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
+	return base.endsWith("/api") ? base : `${base}/api`;
+})();
 
 const AnimatedCounter = ({ value, duration = 600, suffix = "" }) => {
 	const [count, setCount] = useState(0);
