@@ -1,15 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 
+import apiurl from "../config/api";
+
 const ThemeContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
-    const apiurl = (() => {
-        const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
-        return base.endsWith("/api") ? base : `${base}/api`;
-    })();
 
     const [settings, setSettings] = useState(() => {
         const saved = localStorage.getItem("medinsight_settings");

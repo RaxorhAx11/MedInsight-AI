@@ -35,6 +35,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const compression = require("compression");
 const app = express();
@@ -89,7 +90,7 @@ app.use("/api", globalLimiter);
 
 // CORS options setup
 const allowedOrigins = process.env.CLIENT_URL
-	? process.env.CLIENT_URL.split(",").map(o => o.trim())
+	? process.env.CLIENT_URL.split(",").map(o => o.trim().replace(/\/$/, ""))
 	: [];
 
 const corsOptions = {
@@ -97,8 +98,9 @@ const corsOptions = {
 		// Allow requests with no origin (like same-origin, curl, mobile apps, or local scripts)
 		if (!origin) return callback(null, true);
 		
-		const isAllowed = allowedOrigins.includes(origin) || 
-			(process.env.NODE_ENV !== "production" && origin === "http://localhost:3000");
+		const cleanOrigin = origin.replace(/\/$/, "");
+		const isAllowed = allowedOrigins.includes(cleanOrigin) || 
+			(process.env.NODE_ENV !== "production" && (cleanOrigin === "http://localhost:3000" || cleanOrigin === "http://localhost:5173"));
 			
 		if (isAllowed) {
 			callback(null, true);
@@ -141,22 +143,24 @@ app.use("/api/papSmears", papsmearRouter);
 app.use("/api/swabtest", swabtestRouter);
 app.use("/api/swabTest", swabtestRouter);
 
-// Serve frontend static build files in production
+// Serve frontend static build files in production if client/build exists
 if (process.env.NODE_ENV === "production") {
 	const buildPath = path.join(__dirname, "../client/build");
-	app.use(express.static(buildPath, {
-		maxAge: "1d",
-		setHeaders: (res, filePath) => {
-			if (filePath.endsWith(".html")) {
-				res.setHeader("Cache-Control", "no-cache");
-			} else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
-				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+	if (fs.existsSync(buildPath)) {
+		app.use(express.static(buildPath, {
+			maxAge: "1d",
+			setHeaders: (res, filePath) => {
+				if (filePath.endsWith(".html")) {
+					res.setHeader("Cache-Control", "no-cache");
+				} else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
+					res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+				}
 			}
-		}
-	}));
-	app.get("*", (req, res) => {
-		res.sendFile(path.join(buildPath, "index.html"));
-	});
+		}));
+		app.get("*", (req, res) => {
+			res.sendFile(path.join(buildPath, "index.html"));
+		});
+	}
 }
 
 // Global error handling middleware

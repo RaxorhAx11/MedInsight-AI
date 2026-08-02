@@ -11,3 +11,9 @@
 
 # OS-specific files
 .DS_Store
+
+# Build output
+/client/build
+/build
+build/
+

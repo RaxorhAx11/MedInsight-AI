@@ -22,11 +22,7 @@ import {
 	Legend,
 	DefaultLegendContent,
 } from "recharts";
-
-const apiurl = (() => {
-	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
-	return base.endsWith("/api") ? base : `${base}/api`;
-})();
+import apiurl from "../../config/api";
 
 function Chatbot() {
 	const [input, setInput] = useState("");

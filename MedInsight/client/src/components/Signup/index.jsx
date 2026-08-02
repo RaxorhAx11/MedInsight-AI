@@ -4,11 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock, FaCalendar, FaRuler, FaWeight, FaVenusMars, FaChevronRight, FaChevronLeft, FaCheck, FaTimes, FaSpinner, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import styles from "./styles.module.css";
 import ScrollReveal from "../ScrollReveal";
-
-const apiurl = (() => {
-	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
-	return base.endsWith("/api") ? base : `${base}/api`;
-})();
+import apiurl from "../../config/api";
 
 const Signup = () => {
 	const [step, setStep] = useState(1);

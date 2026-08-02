@@ -11,11 +11,7 @@ import {
 	FaUser,
 	FaCamera
 } from "react-icons/fa";
-
-const apiurl = (() => {
-	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
-	return base.endsWith("/api") ? base : `${base}/api`;
-})();
+import apiurl from "../../config/api";
 
 const Profile = () => {
     // State to hold profile data

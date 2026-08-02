@@ -4,11 +4,7 @@ import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaSpinner, FaExclamationCircle } from "react-icons/fa";
 import styles from "./styles.module.css";
 import ScrollReveal from "../ScrollReveal";
-
-const apiurl = (() => {
-	const base = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
-	return base.endsWith("/api") ? base : `${base}/api`;
-})();
+import apiurl from "../../config/api";
 
 const Login = () => {
 	const [data, setData] = useState({ email: "", password: "" });
