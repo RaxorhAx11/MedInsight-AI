@@ -120,6 +120,7 @@ const BiomarkerCard = ({ biomarker, reportType }) => {
     };
 
     const displayTitle = capitalizeWords(getDisplayName(name, reportType));
+    const isLongResult = result && result.toString().length > 12;
 
     return (
         <div className={`${styles.card} ${isNotMentioned ? styles.card_unavailable : ""}`} onClick={handleArrowClick}>
@@ -138,7 +139,9 @@ const BiomarkerCard = ({ biomarker, reportType }) => {
                     </span>
                 </div>
                 <div className={styles.value_section}>
-                    <span className={styles.value}>{isNotMentioned ? "—" : result}</span>
+                    <span className={`${styles.value} ${isLongResult ? styles.value_long : ""}`}>
+                        {isNotMentioned ? "—" : result}
+                    </span>
                     {!isNotMentioned && unit && <span className={styles.unit}>{unit}</span>}
                 </div>
             </div>
