@@ -138,8 +138,7 @@ function Chatbot() {
 		sessionStorage.setItem("medinsight_from_logout", "true");
 		// Reset authorization default header
 		delete axios.defaults.headers.common["Authorization"];
-		navigate("/login");
-		window.location.reload();
+		window.location.replace("/login");
 	};
 
 	const fetchBiomarkerData = async (name) => {
@@ -432,6 +431,12 @@ function Chatbot() {
 			} />
 
 			<div className={styles.page}>
+				{showReportSummary && (
+					<div 
+						className={styles.sidebar_backdrop} 
+						onClick={() => setShowReportSummary(false)}
+					/>
+				)}
 				{showReportSummary && (
 					<div className={styles.side_panel}>
 						<div className={styles.chat_title}>Previous Chats</div>

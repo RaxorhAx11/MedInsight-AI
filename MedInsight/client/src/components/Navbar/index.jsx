@@ -147,8 +147,7 @@ function Navbar({ leftActions }) {
 		sessionStorage.removeItem("medinsight_dashboard_loaded");
 		sessionStorage.setItem("medinsight_from_logout", "true");
 		delete axios.defaults.headers.common["Authorization"];
-		navigate("/login");
-		window.location.reload();
+		window.location.replace("/login");
 	};
 
 	const closeDropdown = (type) => {

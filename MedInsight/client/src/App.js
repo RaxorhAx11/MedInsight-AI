@@ -75,6 +75,31 @@ function App() {
         }
     }, [showSplash]);
 
+    useEffect(() => {
+        const handlePageShow = () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                if (window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
+                    window.location.replace("/login");
+                }
+            }
+        };
+
+        const handleStorageChange = (e) => {
+            if (e.key === "token" && !e.newValue) {
+                window.location.replace("/login");
+            }
+        };
+
+        window.addEventListener("pageshow", handlePageShow);
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("pageshow", handlePageShow);
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
+
     if (showSplash) {
         return <SplashScreen onComplete={() => setShowSplash(false)} />;
     }

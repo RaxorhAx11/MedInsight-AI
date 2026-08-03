@@ -235,3 +235,30 @@
 .card_unavailable:hover .arrow_link {
 	color: var(--text-secondary);
 }
+
+@media (max-width: 480px) {
+	.card {
+		padding: 16px;
+		gap: 12px;
+	}
+
+	.title {
+		font-size: 14px;
+	}
+
+	.value {
+		font-size: 19px;
+	}
+
+	.unit {
+		font-size: 12px;
+	}
+
+	.updatedDate {
+		font-size: 10.5px;
+	}
+
+	.arrow_link {
+		font-size: 11px;
+	}
+}

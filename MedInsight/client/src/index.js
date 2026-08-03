@@ -35,7 +35,7 @@ axios.interceptors.response.use(
 			localStorage.removeItem("token");
 			// Avoid infinite redirect loop if already on login or signup
 			if (!window.location.pathname.includes("/login") && !window.location.pathname.includes("/signup")) {
-				window.location.href = "/login";
+				window.location.replace("/login");
 			}
 		}
 		return Promise.reject(error);

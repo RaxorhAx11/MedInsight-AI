@@ -428,7 +428,6 @@
 	transform: scale(0.98);
 }
 
-/* Responsive adjustments */
 @media (max-width: 900px) {
 	.reports_grid {
 		grid-template-columns: 1fr;
@@ -441,5 +440,77 @@
 		align-items: flex-start;
 		gap: 16px;
 		padding: 20px;
+	}
+}
+
+@media (max-width: 576px) {
+	.container {
+		padding: 20px 16px;
+	}
+
+	.header {
+		padding: 16px;
+		gap: 12px;
+	}
+
+	.header_left {
+		gap: 12px;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.header_text h2 {
+		font-size: 20px;
+	}
+
+	.primary_btn {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.report_card {
+		padding: 16px;
+		gap: 14px;
+	}
+
+	.card_main {
+		gap: 12px;
+	}
+
+	.icon_wrapper {
+		width: 40px;
+		height: 40px;
+	}
+
+	.report_icon {
+		font-size: 16px;
+	}
+
+	.report_title {
+		font-size: 14.5px;
+	}
+
+	.description {
+		font-size: 12.5px;
+		margin-bottom: 8px;
+	}
+
+	.date_row {
+		padding-top: 8px;
+		gap: 4px;
+	}
+
+	.date_item {
+		font-size: 11px;
+	}
+
+	.card_actions {
+		padding-top: 12px;
+		gap: 8px;
+	}
+
+	.download_btn, .delete_btn {
+		padding: 8px 10px;
+		font-size: 12px;
 	}
 }
