@@ -143,24 +143,22 @@ app.use("/api/papSmears", papsmearRouter);
 app.use("/api/swabtest", swabtestRouter);
 app.use("/api/swabTest", swabtestRouter);
 
-// Serve frontend static build files in production if client/build exists
-if (process.env.NODE_ENV === "production") {
-	const buildPath = path.join(__dirname, "../client/build");
-	if (fs.existsSync(buildPath)) {
-		app.use(express.static(buildPath, {
-			maxAge: "1d",
-			setHeaders: (res, filePath) => {
-				if (filePath.endsWith(".html")) {
-					res.setHeader("Cache-Control", "no-cache");
-				} else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
-					res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-				}
+// Serve frontend static build files if client/build exists
+const buildPath = path.join(__dirname, "../client/build");
+if (fs.existsSync(buildPath)) {
+	app.use(express.static(buildPath, {
+		maxAge: "1d",
+		setHeaders: (res, filePath) => {
+			if (filePath.endsWith(".html")) {
+				res.setHeader("Cache-Control", "no-cache");
+			} else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
 			}
-		}));
-		app.get("*", (req, res) => {
-			res.sendFile(path.join(buildPath, "index.html"));
-		});
-	}
+		}
+	}));
+	app.get("*", (req, res) => {
+		res.sendFile(path.join(buildPath, "index.html"));
+	});
 }
 
 // Global error handling middleware
