@@ -766,11 +766,11 @@
 
 @media (max-width: 576px) {
 	.navbar {
-		padding: 10px 16px;
+		padding: 10px 12px;
 	}
 	
 	.logo_text {
-		font-size: 16px;
+		font-size: 15px;
 	}
 	
 	.logo_accent {
@@ -778,24 +778,53 @@
 	}
 	
 	.nav_left {
-		gap: 10px;
-	}
-	
-	.nav_right {
 		gap: 8px;
 	}
 	
+	.nav_right {
+		gap: 6px;
+	}
+	
+	.nav_icon_btn {
+		width: 32px;
+		height: 32px;
+		font-size: 14px;
+	}
+
+	.avatar_circle {
+		width: 32px;
+		height: 32px;
+	}
+
 	.dropdown_menu {
 		position: fixed;
 		top: 60px;
-		right: 16px;
-		left: 16px;
+		right: 12px;
+		left: 12px;
 		width: auto; /* Span almost full width of screen on mobile to prevent overflow */
 		max-width: none;
 	}
 	
 	.logout_btn {
 		display: none; /* Hide dedicated logout button on mobile, rely on avatar menu */
+	}
+}
+
+@media (max-width: 480px) {
+	.logo_text {
+		font-size: 14px;
+	}
+	.heart_icon {
+		font-size: 18px;
+	}
+}
+
+@media (max-width: 400px) {
+	.logo_text {
+		display: none;
+	}
+	.logo_container {
+		gap: 0;
 	}
 }
 

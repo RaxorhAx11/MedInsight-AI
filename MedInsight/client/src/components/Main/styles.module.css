@@ -1085,6 +1085,15 @@
 }
 
 /* Responsiveness */
+@keyframes slideInLeftMobile {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
 @media (max-width: 768px) {
 	.page {
 		height: calc(100vh - 63px);
@@ -1111,16 +1120,49 @@
 		bottom: 0;
 		z-index: 10;
 		box-shadow: var(--shadow-lg);
+		animation: slideInLeftMobile var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+
+	.summary {
+		padding: 13px 16px;
+	}
+
+	.delete_chat_btn {
+		opacity: 1 !important;
 	}
 
 	.chat_container {
-		padding: 16px;
+		padding: 12px;
 	}
 
-	.user_message,
-	.bot_message {
-		max-width: 85%;
+	.chat_window {
+		padding: 14px;
+		margin-bottom: 14px;
+		gap: 12px;
+	}
+
+	.chart_message_wrapper {
+		padding: 12px;
+	}
+
+	.user_message {
+		max-width: 90%;
+		padding: 10px 14px;
 		font-size: 13.5px;
+	}
+
+	.bot_message {
+		max-width: 90%;
+		padding: 12px 14px;
+		font-size: 13.5px;
+	}
+
+	.report_selector_container {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+		padding: 10px 12px;
+		margin-bottom: 14px;
 	}
 
 	.stats_grid {
@@ -1142,6 +1184,37 @@
 }
 
 @media (max-width: 576px) {
+	.input_container {
+		padding: 8px 10px;
+		gap: 8px;
+		border-radius: var(--radius-md);
+	}
+
+	.dropzone {
+		width: 32px;
+		height: 32px;
+	}
+
+	.input {
+		font-size: 13.5px;
+		padding: 6px 8px;
+	}
+
+	.send_btn {
+		padding: 8px 14px;
+		font-size: 13px;
+	}
+
+	.options_container {
+		gap: 8px;
+		margin-bottom: 10px;
+	}
+
+	.option_btn {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+
 	.stats_grid {
 		grid-template-columns: 1fr;
 		gap: 12px;
@@ -1281,6 +1354,9 @@
 	width: 100%;
 	margin: 12px 0;
 	font-size: 13.5px;
+	display: block;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 .botResponse th, .botResponse td {
@@ -1310,4 +1386,28 @@
 .botResponse strong {
 	font-weight: 700;
 	color: var(--primary-deep);
+}
+
+.botResponse pre {
+	background-color: var(--bg-main);
+	padding: 12px;
+	border-radius: var(--radius-md);
+	overflow-x: auto;
+	border: 1px solid var(--border-color);
+	margin: 10px 0;
+	-webkit-overflow-scrolling: touch;
+}
+
+.botResponse code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-size: 12.5px;
+	background-color: var(--bg-main);
+	padding: 2px 4px;
+	border-radius: var(--radius-sm);
+}
+
+.botResponse pre code {
+	padding: 0;
+	background-color: transparent;
+	border-radius: 0;
 }
