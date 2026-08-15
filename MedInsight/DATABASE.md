@@ -129,6 +129,27 @@ Stores AI chat conversation history.
 
 ---
 
+### `reportchunks`
+
+Stores text chunks and their 768-dimension vector embeddings generated from uploaded PDF reports for semantic vector retrieval.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `_id` | ObjectId | Auto | MongoDB document ID |
+| `userId` | ObjectId (ref: `user`) | Yes | Owner user |
+| `reportId` | ObjectId (ref: `File`) | Yes | References the uploaded File ID (corresponds to reportId) |
+| `chunkText` | String | Yes | Plain text snippet representing the panel/notes |
+| `chunkType` | String | Yes | Type of chunk (e.g. `biomarker_group` or `doctor_notes`) |
+| `embedding` | Array (Number) | Yes | 768-dimension vector embedding (validates exactly 768 length) |
+| `createdAt` | Date | No | Default: `Date.now` |
+
+**Indexes:**
+- `{ userId: 1, reportId: 1 }`
+- `{ reportId: 1 }`
+- `reportchunks` (MongoDB Atlas Search index of type `vectorSearch` on the `embedding` path)
+
+---
+
 ### `activities`
 
 Stores chronological user activity log entries.
@@ -178,6 +199,7 @@ users (1)
   ├── semenanalyses (N)      — userId ref, optional fileId ref → files
   ├── papsmears (N)          — userId ref, optional fileId ref → files
   ├── swabtests (N)          — userId ref, optional fileId ref → files
+  ├── reportchunks (N)       — userId ref, reportId ref → files
   ├── conversations (N)      — userId ref
   ├── activities (N)         — userId ref
   └── notifications (N)      — userId ref
@@ -208,6 +230,7 @@ This file is loaded into memory at server startup and used by both the PDF extra
 ```
 1. User uploads PDF
    → biomarkers.json lookup → extract biomarkers → save to files collection
+   → split report text into panels and doctor notes → generate 768-dim embeddings → save to reportchunks
 
 2. User saves report
    → save to report collection (bloodreports, urinereports, etc.)
@@ -219,13 +242,15 @@ This file is loaded into memory at server startup and used by both the PDF extra
    → merge with biomarkers.json for expected biomarker list
 
 4. User opens AI chat
-   → query report collection for selected reportId
-   → format report data as system instruction context
+   → generate embedding for user's question
+   → query reportchunks collection using $vectorSearch filtered by userId & reportId (with chronological fallback)
+   → format retrieved chunks as context system instruction
    → save messages to conversations collection
 
 5. User deletes a file
    → delete from files collection
    → delete all matching documents from all 6 report collections
+   → delete associated report chunks from reportchunks collection
 ```
 
 ---
@@ -243,6 +268,10 @@ The following indexes are defined in the Mongoose schemas and should be created 
 { userId: 1, reportDate: -1 }
 { userId: 1, fileId: 1 }
 
+// reportchunks
+{ userId: 1, reportId: 1 }
+{ reportId: 1 }
+
 // conversations
 { userId: 1, conversationID: 1 }  // unique
 
@@ -253,4 +282,4 @@ The following indexes are defined in the Mongoose schemas and should be created 
 { userId: 1, createdAt: -1 }
 ```
 
-> **Note:** In production, set `MONGODB_AUTO_INDEX=false` and manage index creation through MongoDB Atlas or migration scripts to avoid performance overhead at startup.
+> **Note:** In production, set `MONGODB_AUTO_INDEX=false` and manage index creation through MongoDB Atlas or migration scripts to avoid performance overhead at startup. Additionally, ensure the Atlas Search Vector index named `reportchunks` is configured on the `reportchunks` collection.

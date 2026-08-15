@@ -37,9 +37,9 @@ In production, the Express server builds and serves the React frontend as static
 │   │ - compress │  │ /api/files   │  │ - cloudStorageService.js │   │
 │   │ - rateLmt  │  │ /api/convers.│  │ - notificationService.js │   │
 │   │ - sanitize │  │ /api/*report │  │ - activityService.js     │   │
-│   │ - reqLogger│  │ /api/notif.  │  └──────────────────────────┘   │
-│   └────────────┘  │ /api/activit.│                                  │
-│                   │ /health      │                                   │
+│   │ - reqLogger│  │ /api/notif.  │  │ - embeddingService.js    │   │
+│   │            │  │ /api/activit.│  │ - ragChunking.js         │   │
+│   └────────────┘  │ /health      │  └──────────────────────────┘   │
 │                   └──────────────┘                                  │
 └──────────────┬────────────────────────────────┬────────────────────┘
                │                                │
@@ -49,11 +49,12 @@ In production, the Express server builds and serves the React frontend as static
 │  - users             │              │  - Cloudinary       │
 │  - files             │              │    (file storage)   │
 │  - bloodreports      │              │  - Google Gemini    │
-│  - urinereports      │              │    (AI responses)   │
-│  - stoolreports      │              └─────────────────────┘
-│  - semenanalyses     │
+│  - urinereports      │              │    (AI responses /  │
+│  - stoolreports      │              │     embeddings)     │
+│  - semenanalyses     │              └─────────────────────┘
 │  - papsmears         │
 │  - swabtests         │
+│  - reportchunks      │
 │  - conversations     │
 │  - activities        │
 │  - notifications     │
@@ -135,11 +136,14 @@ The five non-blood report types (Urine, Stool, Semen Analysis, Pap Smear, Swab T
 
 Business logic is separated into the `services/` directory:
 
-- **`aiService.js`** — Manages the Gemini API client lifecycle (singleton) and generates chat responses.
+- **`aiService.js`** — Manages the Gemini API client lifecycle (singleton) and generates chat responses using retrieved medical chunks as system context.
 - **`biomarkerService.js`** — Evaluates biomarker status (Normal/High/Low) for both numeric and qualitative results. Contains the `REPORT_BIOMARKERS` mapping of expected biomarkers per report type.
 - **`cloudStorageService.js`** — Handles file upload and deletion against Cloudinary. Falls back to local disk storage when Cloudinary is not configured.
 - **`notificationService.js`** — Creates in-app notifications and triggers biomarker anomaly alerts after a report is saved.
 - **`activityService.js`** — Persists activity log entries to MongoDB.
+- **`embeddingService.js`** — Generates 768-dimension semantic vector embeddings using Google Gemini's `gemini-embedding-2` model with exponential backoff retry logic.
+- **`ragChunking.js`** — Performs context-preserving, biomarker-based chunking of parsed PDF text, grouping related panels (e.g. CBC, Lipid) and doctor's notes.
+
 
 ---
 
@@ -159,6 +163,7 @@ MongoDB accessed via Mongoose. See [DATABASE.md](./DATABASE.md) for full schema 
 | `semenanalyses` | Semen analysis data |
 | `papsmears` | Pap smear data |
 | `swabtests` | Swab test data |
+| `reportchunks` | Parsed report text chunks and their 768-dimension vector embeddings |
 | `conversations` | AI chat message history |
 | `activities` | User activity log entries |
 | `notifications` | In-app notification records |
@@ -200,3 +205,6 @@ In production, the `overrideConsole()` function redirects all `console.log`, `co
 | JWT stored in localStorage | Simplest approach for a SPA; appropriate for the current single-instance deployment model |
 | pdf-parse with layout preservation | Custom `pagerender` function preserves horizontal tab spacing for accurate biomarker row extraction |
 | Email alerts simulated to log files | Removes need for an SMTP provider dependency while preserving the alert logic |
+| RAG with semantic retrieval & fallback | Uses Google Gemini's `gemini-embedding-2` for 768-dim embeddings queried via Atlas Vector Search, falling back to chronological lookup for local development |
+| Panel-based RAG chunking | Grouping chunks by specific biomarker panel prevents misattribution of clinical values with similar names (e.g. pH in Urine vs Stool) |
+| Multi-level isolated queries | Strict filtering by `userId` and `reportId` prevents cross-report data leakage and cross-user data leakage |

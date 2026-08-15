@@ -144,6 +144,32 @@ server {
 3. Whitelist your server's IP address (or use `0.0.0.0/0` for testing, not recommended for production).
 4. Copy the connection string from Atlas and set it as `MONGODB_URI`.
 5. The connection string format: `mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority`
+6. Create the Atlas Search Vector Index required for RAG semantic queries:
+   - Run the setup script:
+     ```bash
+     node server/scripts/createVectorIndex.js
+     ```
+   - Alternatively, create the index manually in the Atlas UI on the `reportchunks` collection with index name `reportchunks` using the definition:
+     ```json
+     {
+       "fields": [
+         {
+           "type": "vector",
+           "path": "embedding",
+           "numDimensions": 768,
+           "similarity": "cosine"
+         },
+         {
+           "type": "filter",
+           "path": "userId"
+         },
+         {
+           "type": "filter",
+           "path": "reportId"
+         }
+       ]
+     }
+     ```
 
 ---
 
@@ -241,6 +267,12 @@ After deploying, verify the application is running correctly:
    tail -f server/logs/error.log
    ```
 
+6. **RAG & Vector Search Verification**
+   Verify the RAG retrieval pipeline and vector search index on the database by running the integration test script:
+   ```bash
+   node server/scripts/testRag.js
+   ```
+
 ---
 
 ## Security Checklist for Production
@@ -253,6 +285,7 @@ After deploying, verify the application is running correctly:
 - [ ] HTTPS is enabled via reverse proxy (Nginx + Let's Encrypt)
 - [ ] `.env` file is NOT committed to version control
 - [ ] `MONGODB_AUTO_INDEX=false` in production
+- [ ] MongoDB Atlas Vector Search index named `reportchunks` is configured on the `reportchunks` collection
 - [ ] Server logs are monitored (PM2 or equivalent)
 
 ---

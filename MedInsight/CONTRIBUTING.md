@@ -161,10 +161,39 @@ Never hardcode credentials or secrets. All configurable values must come from en
 
 ## Running Tests
 
+### Full API Integration Tests
+Runs the full endpoint integration suite (requires server to be running on port 8080):
 ```bash
-# Server integration tests
 cd server
 npm test
+```
+
+### RAG Integration Tests
+Verifies the correctness of the vector search pipeline, semantic query retrieval, chunking, and isolation scopes (requires database connection):
+```bash
+cd server
+node scripts/testRag.js
+```
+
+### Unit Tests
+Run individual services, controllers, and models validation tests:
+```bash
+cd server
+
+# Test RAG chunking logic
+node tests/ragChunking.test.js
+
+# Test ReportChunk schema validation
+node tests/reportChunk.test.js
+
+# Test embedding generation with rate limits & retries
+node tests/embeddingService.test.js
+
+# Test Gemini AI chat generation with RAG context
+node tests/aiService.test.js
+
+# Test upload route with mock RAG indexing
+node tests/files.test.js
 ```
 
 ---

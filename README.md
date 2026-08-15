@@ -1,4 +1,4 @@
-Live- https://medinsight-frontend-3ky7.onrender.com
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://medinsight-frontend-3ky7.onrender.com)
 
 # MedInsight AI
 
@@ -41,6 +41,34 @@ To ensure strict security and prevent unauthorized access, all retrieval queries
 
 ### Testing
 A regression test suite ([testRag.js](file:///d:/MedInsight%20AI%20-%20Intelligent%20Biomarker-Based%20Medical%20Report%20Analyzer/MedInsight/server/scripts/testRag.js)) automatically verifies the correctness of the RAG system. It tests chunking logic, report isolation, user isolation, value accuracy, handling of missing data, general-knowledge fallback, and native vector search queries, generating a structured summary table of results.
+
+### Vector Search Index Setup
+For full RAG functionality using semantic retrieval, you must create a Vector Search index in MongoDB Atlas. If running on local MongoDB, the application automatically falls back to fetching recent chunks using standard B-Tree indexes.
+To configure the Atlas Vector Search Index automatically:
+```bash
+node MedInsight/server/scripts/createVectorIndex.js
+```
+Alternatively, you can create it manually on the `reportchunks` collection in MongoDB Atlas with the index name `reportchunks` using the following definition:
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "userId"
+    },
+    {
+      "type": "filter",
+      "path": "reportId"
+    }
+  ]
+}
+```
 
 ### Known Engineering Challenges Solved
 - **Cross-Report Data Leakage:** Solved an issue where the retrieval step omitted the `reportId` filter, causing search queries to leak context from historical reports into the current active chat.

@@ -69,6 +69,10 @@ User selects a PDF on the Upload page
           h. Push biomarker entry to results array
   → Upload file buffer to Cloudinary (if configured) or local uploads/ folder
   → Create File document in MongoDB (userId, fileName, filePath, publicId, mimetype, testDate)
+  → Generate semantic chunks and embeddings for the report:
+      1. Chunk the parsed PDF text and biomarker results by panel/category and doctor's notes (using ragChunking.js)
+      2. Generate 768-dimension embeddings for each chunk using Google's gemini-embedding-2 model (using embeddingService.js)
+      3. Save chunk documents (userId, reportId, chunkText, chunkType, embedding) in the reportchunks collection
   → Create notification: "New report uploaded successfully"
   → Log activity: type=upload
   → Return 201 { biomarkers: [...], fileId: "..." }
@@ -129,11 +133,17 @@ User submits a message (with a selected reportId)
       Model.findOne({ _id: reportId, userId }) — ensures user ownership
       Stop at first match
   → If report found:
-      If Blood Test + has CBC biomarkers or CBC in file name → detectedType = "CBC (Complete Blood Count)"
-      formatSelectedReportContext(reportDoc, detectedType) → structured text block
-      formatChatHistory(messages) → align to Gemini SDK format (user/model alternating)
-      ai.chats.create({ model: "gemini-3.6-flash", history, config: { systemInstruction } })
-      chat.sendMessage({ message: question })
+      1. Generate a 768-dimension embedding vector for the user's question using gemini-embedding-2
+      2. Perform MongoDB Atlas Vector Search on the reportchunks collection:
+         - index: "reportchunks"
+         - filter: { userId: targetUserId, reportId: targetReportId }
+         - limit: 5
+      3. Fallback: If Atlas Vector Search fails, fetch the 5 most recent chunks for the report from database
+      4. Format context: Group retrieved chunk text as SELECTED REPORT CONTEXT
+      5. Align chat history to Gemini SDK role format (alternating user/model)
+      6. Create chat session:
+         ai.chats.create({ model: "gemini-3.6-flash", history, config: { systemInstruction (includes retrieved context) } })
+      7. Send message: chat.sendMessage({ message: question })
   → saveMessage(userId, conversationID, "bot", botResponse)
   → Return { botResponse }
   → Frontend renders bot response (animated character by character)
@@ -196,7 +206,7 @@ User clicks delete on a report
   → deleteFile(filePath, publicId, type) → delete from Cloudinary or local disk
   → Build deleteQuery to match associated report documents:
       Match by fileId OR (matching date window ±24h AND no fileId)
-  → Promise.all([BloodReport.deleteMany, UrineReport.deleteMany, ...]) → delete all report data
+  → Promise.all([BloodReport.deleteMany, UrineReport.deleteMany, ..., ReportChunk.deleteMany({ reportId: fileId })]) → delete all report and chunk data
   → File.deleteOne → delete the file record
   → Log delete activity
   → Return 200 { message: "File deleted successfully!" }

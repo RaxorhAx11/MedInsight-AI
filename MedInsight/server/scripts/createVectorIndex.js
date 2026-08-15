@@ -26,9 +26,9 @@ async function setupVectorIndex() {
             console.log(`Found ${existingIndexes.length} search indexes.`);
             
             for (const idx of existingIndexes) {
-                if (idx.name === "vector_index") {
+                if (idx.name === "reportchunks") {
                     indexExists = true;
-                    console.log("Search index 'vector_index' already exists:", JSON.stringify(idx, null, 2));
+                    console.log("Search index 'reportchunks' already exists:", JSON.stringify(idx, null, 2));
                     break;
                 }
             }
@@ -37,14 +37,14 @@ async function setupVectorIndex() {
         }
         
         if (!indexExists) {
-            console.log("Creating new vector search index 'vector_index'...");
+            console.log("Creating new vector search index 'reportchunks'...");
             
             // Use db.command for createSearchIndexes to support older driver versions in Mongoose v6
             const result = await db.command({
                 createSearchIndexes: "reportchunks",
                 indexes: [
                     {
-                        name: "vector_index",
+                        name: "reportchunks",
                         type: "vectorSearch",
                         definition: {
                             fields: [
@@ -71,7 +71,7 @@ async function setupVectorIndex() {
             console.log("Vector index creation request submitted successfully:", JSON.stringify(result, null, 2));
             console.log("Note: The index build may take a few minutes to complete on MongoDB Atlas.");
         } else {
-            console.log("Skipping vector search index creation as 'vector_index' already exists.");
+            console.log("Skipping vector search index creation as 'reportchunks' already exists.");
         }
         
     } catch (error) {
