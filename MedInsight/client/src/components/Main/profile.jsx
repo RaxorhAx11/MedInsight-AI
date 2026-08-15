@@ -165,7 +165,10 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axios.get(`${apiurl}/users/profile`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${apiurl}/users/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 const totalFields = 4;
                 const completedFields = Object.keys(response.data).filter(
                     (key) => ["age", "height", "weight", "sex"].includes(key) && response.data[key]

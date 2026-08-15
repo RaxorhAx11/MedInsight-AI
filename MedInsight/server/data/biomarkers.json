@@ -19,7 +19,8 @@
     },
     "aliases": [
       "WBC",
-      "Total WBC count"
+      "Total WBC count",
+      "White Blood Cells"
     ]
   },
   "Platelets": {
@@ -43,7 +44,8 @@
     },
     "aliases": [
       "RBC",
-      "Total RBC count"
+      "Total RBC count",
+      "Red Blood Cells"
     ]
   },
   "Packed Cell Volume (PCV)": {
@@ -1916,8 +1918,6 @@
     "aliases": [
       "WBC (Pus Cells)",
       "Pus Cells",
-      "WBC",
-      "White Blood Cells",
       "Pus Cells (W.B.C.)"
     ]
   },
@@ -1930,8 +1930,6 @@
     },
     "aliases": [
       "Urine RBC",
-      "RBC",
-      "Red Blood Cells",
       "Erythrocytes",
       "R.B.C.",
       "RBCs"
@@ -2095,9 +2093,7 @@
     },
     "aliases": [
       "Stool RBC",
-      "Fecal RBC",
-      "Red Blood Cells",
-      "RBC"
+      "Fecal RBC"
     ]
   },
   "Stool WBC": {
@@ -2109,9 +2105,7 @@
     },
     "aliases": [
       "Stool WBC",
-      "White Blood Cells",
-      "Fecal Leukocytes",
-      "WBC"
+      "Fecal Leukocytes"
     ]
   },
   "Stool Ova": {
@@ -2409,8 +2403,7 @@
       "Pus Cells",
       "Round Cells (Leukocytes)",
       "Leukocyte Count (LC)",
-      "WBC Count",
-      "WBC"
+      "WBC Count"
     ]
   },
   "Semen RBC": {
@@ -2421,9 +2414,7 @@
       "max": "0"
     },
     "aliases": [
-      "Semen RBC",
-      "Red Blood Cells",
-      "RBC"
+      "Semen RBC"
     ]
   },
   "Semen Agglutination": {

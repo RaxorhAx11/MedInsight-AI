@@ -8,6 +8,7 @@ MedInsight AI is a full-stack web application that allows users to upload PDF me
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [RAG Pipeline Architecture](#rag-pipeline-architecture)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
@@ -58,6 +59,33 @@ MedInsight AI is a full-stack web application that allows users to upload PDF me
 | Logging | Winston | Structured production logging |
 | Security | Helmet, CORS, custom rate limiter, sanitizer | Security headers, CORS, rate limiting, XSS sanitization |
 | Compression | compression | HTTP response compression |
+
+---
+
+## RAG Pipeline Architecture
+
+### Overview
+MedInsight AI uses a Retrieval-Augmented Generation (RAG) pipeline to ground AI chat answers in the user's actual report data. This avoids stuffing the entire report text into every prompt—saving API tokens and reducing latency—while supporting queries across the user's full report history.
+
+### Pipeline Stages
+1. **Report Upload:** The user uploads a machine-readable PDF medical report.
+2. **Biomarker Extraction & Panel Classification:** Biomarkers are extracted and classified into panels (e.g., CBC, Urinalysis, Stool Analysis).
+3. **Biomarker-Based Chunking:** Extracted data is chunked and grouped by biomarker panel to preserve clinical context.
+4. **Embedding Generation:** Chunks are converted into 768-dimension vector embeddings using the `text-embedding-004` model from Gemini.
+5. **MongoDB Storage:** Embeddings and metadata are saved in the `ReportChunk` collection.
+6. **Vector Indexing:** Chunks are indexed via MongoDB Atlas Vector Search.
+7. **Semantic Retrieval:** User queries are embedded and retrieved using `$vectorSearch`, filtered by both `userId` and the active `reportId`.
+8. **Answer Generation:** Retrieved chunks are used as context to ground the Gemini model's final response.
+
+### Data Isolation
+To ensure strict security and prevent unauthorized access, all retrieval queries filter by both `userId` and the active `reportId`. This double-filtering guarantees that users only see their own data, strictly scoped to the currently selected medical report.
+
+### Testing
+A regression test suite ([testRag.js](file:///d:/MedInsight%20AI%20-%20Intelligent%20Biomarker-Based%20Medical%20Report%20Analyzer/MedInsight/server/scripts/testRag.js)) automatically verifies the correctness of the RAG system. It tests chunking logic, report isolation, user isolation, value accuracy, handling of missing data, general-knowledge fallback, and native vector search queries, generating a structured summary table of results.
+
+### Known Engineering Challenges Solved
+- **Cross-Report Data Leakage:** Solved an issue where the retrieval step omitted the `reportId` filter, causing search queries to leak context from historical reports into the current active chat.
+- **Biomarker Value Misattribution:** Fixed a bug where values with similar names (e.g., pH in Urinalysis vs. pH in Stool Analysis) were cross-contaminated by grouping chunks strictly by their biomarker panel.
 
 ---
 

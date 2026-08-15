@@ -47,7 +47,10 @@ function Chatbot() {
 
 	const fetchUploadedReports = async () => {
 		try {
-			const response = await axios.get(`${apiurl}/conversations/reports`);
+			const token = localStorage.getItem("token");
+			const response = await axios.get(`${apiurl}/conversations/reports`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			setUploadedReports(response.data.reports || []);
 		} catch (error) {
 			console.error("Error fetching reports list:", error);
@@ -57,7 +60,10 @@ function Chatbot() {
 
 	const fetchConversations = async () => {
 		try {
-			const response = await axios.get(`${apiurl}/conversations/user`);
+			const token = localStorage.getItem("token");
+			const response = await axios.get(`${apiurl}/conversations/user`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			setConversations(response.data.conversations);
 		} catch (error) {
 			if (error.response?.status === 401) {
@@ -81,7 +87,10 @@ function Chatbot() {
 
 	const chatClicks = async (conversationID) => {
 		try {
-			const response = await axios.get(`${apiurl}/conversations/conversation/${conversationID}`);
+			const token = localStorage.getItem("token");
+			const response = await axios.get(`${apiurl}/conversations/conversation/${conversationID}`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			const messages = response.data.map(({ sender, message }) => ({
 				sender,
 				text: message,
@@ -101,7 +110,10 @@ function Chatbot() {
 		if (!window.confirm("Are you sure you want to delete this chat?")) return;
 
 		try {
-			await axios.delete(`${apiurl}/conversations/conversation/${idToDelete}`);
+			const token = localStorage.getItem("token");
+			await axios.delete(`${apiurl}/conversations/conversation/${idToDelete}`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			
 			// Refresh list
 			await fetchConversations();
@@ -121,7 +133,10 @@ function Chatbot() {
 		if (!window.confirm("Are you sure you want to clear all chat history? This cannot be undone.")) return;
 
 		try {
-			await axios.delete(`${apiurl}/conversations/clear`);
+			const token = localStorage.getItem("token");
+			await axios.delete(`${apiurl}/conversations/clear`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			
 			setConversations([]);
 			setMessages([]);
@@ -143,10 +158,13 @@ function Chatbot() {
 
 	const fetchBiomarkerData = async (name) => {
 		try {
+			const token = localStorage.getItem("token");
 			const endpoints = ["bloodreport", "urinereport", "stoolreport", "semenanalysis", "papsmear", "swabtest"];
 			for (const ep of endpoints) {
 				try {
-					const response = await axios.get(`${apiurl}/${ep}/history/${name}`);
+					const response = await axios.get(`${apiurl}/${ep}/history/${name}`, {
+						headers: { Authorization: `Bearer ${token}` }
+					});
 					if (response.data && response.data.length > 0) {
 						const history = response.data.map((record) => ({
 							date: record.date,
@@ -240,12 +258,15 @@ function Chatbot() {
 		}
 
 		try {
+			const token = localStorage.getItem("token");
 			const response = await axios.post(`${apiurl}/conversations/chat`, {
 				message: textToSend,
 				messages: messages,
 				reportId: reportIdToSend,
 				conversationID,
 				topic: textToSend,
+			}, {
+				headers: { Authorization: `Bearer ${token}` }
 			});
 
 			setMessages((prevMessages) => [
@@ -298,7 +319,10 @@ function Chatbot() {
 
 		try {
 			// Step 1: Upload and parse PDF
-			const response = await axios.post(`${apiurl}/files`, formData);
+			const token = localStorage.getItem("token");
+			const response = await axios.post(`${apiurl}/files`, formData, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			const { biomarkers, fileId } = response.data;
 
 			// Step 2: Classify report type and determine correct endpoint
@@ -369,6 +393,8 @@ function Chatbot() {
 				biomarkers: biomarkers,
 				description: `Uploaded via chatbot on ${new Date().toLocaleDateString()}`,
 				fileId: fileId
+			}, {
+				headers: { Authorization: `Bearer ${token}` }
 			});
 
 			const newReport = reportRes.data.report;

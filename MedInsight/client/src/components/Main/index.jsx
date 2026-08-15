@@ -65,6 +65,9 @@ function Main() {
 			setIsLoading(true);
 			setError("");
 
+			const token = localStorage.getItem("token");
+			const config = { headers: { Authorization: `Bearer ${token}` } };
+
 			const endpoints = [
 				{ name: "bloodreport", label: "Blood Report" },
 				{ name: "urinereport", label: "Urine Report" },
@@ -75,7 +78,7 @@ function Main() {
 			];
 
 			const biomarkerPromises = endpoints.map(ep =>
-				axios.get(`${apiurl}/${ep.name}/biomarkers`)
+				axios.get(`${apiurl}/${ep.name}/biomarkers`, config)
 					.then(res => (res.data || []).map(b => ({ ...b, reportType: ep.name })))
 					.catch(err => {
 						if (err.response && err.response.status === 404) {
@@ -88,8 +91,8 @@ function Main() {
 
 			// Fetch user profile, uploaded files, and biomarker parameters in parallel
 			const [profileRes, filesRes, ...biomarkerResults] = await Promise.all([
-				axios.get(`${apiurl}/users/profile`),
-				axios.get(`${apiurl}/files`),
+				axios.get(`${apiurl}/users/profile`, config),
+				axios.get(`${apiurl}/files`, config),
 				...biomarkerPromises
 			]);
 
@@ -124,7 +127,10 @@ function Main() {
 		if (!window.confirm("Are you sure you want to delete this lab report? This will delete the report and remove its biometric results from your tracked history.")) return;
 
 		try {
-			await axios.delete(`${apiurl}/files/${reportId}`);
+			const token = localStorage.getItem("token");
+			await axios.delete(`${apiurl}/files/${reportId}`, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
 			// Reload all dashboard statistics and biomarkers
 			await fetchDashboardData();
 		} catch (err) {

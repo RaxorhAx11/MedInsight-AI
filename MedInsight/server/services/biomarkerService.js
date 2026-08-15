@@ -158,7 +158,9 @@ const BIOMARKER_MAPS = {
         "UrineNitrites": "Urine Nitrite",
         "BloodGlucose": "Urine Glucose",
         "TotalProtein": "Urine Protein",
-        "Leukocytes": "Urine Leukocyte Esterase"
+        "Leukocytes": "Urine Leukocyte Esterase",
+        "WhiteBloodCells": "Urine WBC (Pus Cells)",
+        "RedBloodCells": "Urine RBC"
     },
     "Stool": {
         "Color": "Stool Color",
@@ -180,7 +182,9 @@ const BIOMARKER_MAPS = {
         "OccultBlood": "Stool Occult Blood",
         "FatStool": "Stool Fat Globules",
         "ParasiteOva": "Stool Ova",
-        "Yeast": "Stool Yeast Cells"
+        "Yeast": "Stool Yeast Cells",
+        "WhiteBloodCells": "Stool WBC",
+        "RedBloodCells": "Stool RBC"
     },
     "Semen Analysis": {
         "Volume": "Semen Volume",
@@ -214,7 +218,9 @@ const BIOMARKER_MAPS = {
         "volume": "Semen Volume",
         "liquefaction": "Semen Liquefaction Time",
         "viscosity": "Semen Viscosity",
-        "white_blood_cells": "Semen WBC"
+        "white_blood_cells": "Semen WBC",
+        "WhiteBloodCells": "Semen WBC",
+        "RedBloodCells": "Semen RBC"
     },
     "Pap Smear": {
         "Comments": "Pap Smear Comments",

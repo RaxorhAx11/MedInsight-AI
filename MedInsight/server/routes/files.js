@@ -107,7 +107,8 @@ const extractBiomarkerResults = async (pdfBuffer) => {
         }
     }
     const text = pdfData.text;
-    return parseBiomarkers(text);
+    const biomarkers = parseBiomarkers(text);
+    return { text, biomarkers };
 };
 
 const parseBiomarkers = (text) => {
@@ -244,14 +245,15 @@ router.post("/", authMiddleware, rateLimiter(15), (req, res, next) => {
                 return res.status(400).send({ message: "Invalid file type. Only PDF files are supported." });
             }
 
-            let biomarkers = [];
+            let parseResult;
             try {
                 // Parse directly from memory buffer
-                biomarkers = await extractBiomarkerResults(req.file.buffer);
+                parseResult = await extractBiomarkerResults(req.file.buffer);
             } catch (error) {
                 console.error("Error parsing PDF:", error);
                 return res.status(500).send({ message: "Error processing PDF data." });
             }
+            const { text: rawText, biomarkers } = parseResult;
 
             // Upload the file to Cloudinary / Fallback Local Storage
             const { uploadFile } = require("../services/cloudStorageService");
@@ -273,6 +275,44 @@ router.post("/", authMiddleware, rateLimiter(15), (req, res, next) => {
             });
 
             await file.save();
+
+            // Generate semantic chunks and embeddings for the report, then save them
+            try {
+                const { chunkReportData } = require("../services/ragChunking");
+                const { generateEmbedding } = require("../services/embeddingService");
+                const ReportChunk = require("../models/ReportChunk");
+
+                const reportDate = req.body.testDate ? new Date(req.body.testDate) : new Date();
+                const chunks = chunkReportData(rawText, biomarkers, {
+                    reportId: file._id,
+                    userId,
+                    reportDate,
+                    description: req.body.description
+                });
+
+                if (chunks.length > 0) {
+                    console.log(`[RAG] Generating embeddings for ${chunks.length} chunks...`);
+                    const chunkDocs = [];
+                    for (const chunk of chunks) {
+                        const embedding = await generateEmbedding(chunk.text);
+                        chunkDocs.push({
+                            userId,
+                            reportId: file._id,
+                            chunkText: chunk.text,
+                            chunkType: chunk.metadata.chunkType,
+                            embedding
+                        });
+                    }
+                    
+                    if (chunkDocs.length > 0) {
+                        await ReportChunk.insertMany(chunkDocs);
+                        console.log(`[RAG] Successfully saved ${chunkDocs.length} ReportChunk documents.`);
+                    }
+                }
+            } catch (ragError) {
+                console.error("[RAG] Failed to generate/save chunks or embeddings:", ragError);
+                throw ragError;
+            }
 
             // Trigger upload success notification and activity log
             try {
@@ -355,6 +395,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
             ]
         };
 
+        const ReportChunk = require("../models/ReportChunk");
+
         // Delete all associated report documents across all collections
         await Promise.all([
             BloodReport.deleteMany(deleteQuery),
@@ -362,7 +404,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
             StoolReport.deleteMany(deleteQuery),
             SemenAnalysis.deleteMany(deleteQuery),
             PapSmear.deleteMany(deleteQuery),
-            SwabTest.deleteMany(deleteQuery)
+            SwabTest.deleteMany(deleteQuery),
+            ReportChunk.deleteMany({ reportId: fileId })
         ]);
 
         // Delete the record from the database

@@ -31,7 +31,10 @@ const LabReports = () => {
         const fetchReports = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${apiurl}/files`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${apiurl}/files`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setReports(response.data || []);
             } catch (err) {
                 console.error("Error fetching reports:", err);
@@ -48,7 +51,10 @@ const LabReports = () => {
         if (!window.confirm("Are you sure you want to delete this lab report? This will delete the report and remove its biometric results from your tracked history.")) return;
 
         try {
-            await axios.delete(`${apiurl}/files/${reportId}`);
+            const token = localStorage.getItem("token");
+            await axios.delete(`${apiurl}/files/${reportId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setReports(prev => prev.filter(r => r._id !== reportId));
         } catch (err) {
             console.error("Error deleting report:", err);

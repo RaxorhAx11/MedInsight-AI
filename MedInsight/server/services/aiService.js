@@ -18,6 +18,8 @@ const getAiInstance = () => {
     return aiInstance;
 };
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * Formats the selected report's context into a structured, readable string for the model.
  * @param {Object} reportDoc - The single selected report document
@@ -105,11 +107,108 @@ const generateChatResponse = async (reportDoc, reportType, question, chatHistory
     try {
         const ai = getAiInstance();
         
-        const formattedContext = formatSelectedReportContext(reportDoc, reportType);
+        // 1. Retrieve top 5 semantic chunks using vector search
+        const { generateEmbedding } = require("./embeddingService");
+        const ReportChunk = require("../models/ReportChunk");
+        const mongoose = require("mongoose");
+
+        // Convert userId and reportId to mongoose.Types.ObjectId to match schema type
+        const targetUserId = new mongoose.Types.ObjectId(reportDoc.userId.toString());
+        // report chunks are indexed/associated by fileId (reportDoc.fileId). If fileId is missing, fall back to reportDoc._id.
+        const rawReportId = reportDoc.fileId || reportDoc._id;
+        const targetReportId = new mongoose.Types.ObjectId(rawReportId.toString());
+
+        // Comprehensive debug logs for activeReportId received from frontend and comparison with database formats
+        console.log("[DEBUG] activeReportId received from frontend (reportDoc._id):", reportDoc._id, "type:", typeof reportDoc._id, "constructor:", reportDoc._id?.constructor?.name);
+        console.log("[DEBUG] Linked fileId (used as reportId in ReportChunk):", reportDoc.fileId, "type:", typeof reportDoc.fileId, "constructor:", reportDoc.fileId?.constructor?.name);
+        console.log("[DEBUG] targetReportId converted for filter:", targetReportId, "type:", typeof targetReportId, "constructor:", targetReportId?.constructor?.name);
+
+        let chunks = [];
+        try {
+            // Fetch a sample ReportChunk directly from DB to compare formats
+            if (typeof ReportChunk.findOne === "function") {
+                const sampleChunk = await ReportChunk.findOne({ userId: targetUserId }).lean();
+                if (sampleChunk) {
+                    console.log("[DEBUG] Sample ReportChunk from DB - reportId value:", sampleChunk.reportId, "type:", typeof sampleChunk.reportId, "constructor:", sampleChunk.reportId?.constructor?.name);
+                } else {
+                    console.log("[DEBUG] Sample ReportChunk: No chunk found for user in DB");
+                }
+            } else {
+                console.log("[DEBUG] ReportChunk.findOne is not a function (mocked or unsupported environment)");
+            }
+
+            const queryVector = await generateEmbedding(question);
+            
+            // Ensure queryVector is a plain array of numbers
+            if (!Array.isArray(queryVector) || queryVector.some(n => typeof n !== "number")) {
+                throw new Error("Generated queryVector is not a plain array of numbers");
+            }
+
+            const vectorSearchPipeline = [
+                {
+                    $vectorSearch: {
+                        index: "reportchunks",
+                        path: "embedding",
+                        queryVector: queryVector,
+                        numCandidates: 100,
+                        limit: 5,
+                        filter: {
+                            userId: targetUserId,
+                            reportId: targetReportId
+                        }
+                    }
+                }
+            ];
+
+            console.log("[RAG] Final filter object used:", JSON.stringify(vectorSearchPipeline[0].$vectorSearch.filter, null, 2));
+            console.log("[RAG] Filter object constructors - userId:", vectorSearchPipeline[0].$vectorSearch.filter.userId?.constructor?.name, "reportId:", vectorSearchPipeline[0].$vectorSearch.filter.reportId?.constructor?.name);
+            console.log("[RAG] Full Aggregation Pipeline Query:", JSON.stringify(vectorSearchPipeline, null, 2));
+
+            // Isolate check: run the same query with the filter removed entirely to check if vector search itself returns chunks
+            try {
+                const noFilterPipeline = [
+                    {
+                        $vectorSearch: {
+                            index: "reportchunks",
+                            path: "embedding",
+                            queryVector: queryVector,
+                            numCandidates: 100,
+                            limit: 5
+                        }
+                    }
+                ];
+                const noFilterResults = await ReportChunk.aggregate(noFilterPipeline);
+                console.log(`[RAG Isolation Check] Aggregation with filter removed returned ${noFilterResults.length} chunks.`);
+            } catch (isolationError) {
+                console.warn("[RAG Isolation Check] Aggregation with filter removed failed:", isolationError.message);
+            }
+
+            chunks = await ReportChunk.aggregate(vectorSearchPipeline);
+            console.log(`[RAG] Successfully retrieved ${chunks.length} chunks via Atlas Vector Search.`);
+        } catch (vectorSearchError) {
+            console.warn("[RAG] Atlas Vector Search failed or not supported. Falling back to query. Error:", vectorSearchError.message);
+            // Fallback: get the 5 most recent chunks for the selected report
+            chunks = await ReportChunk.find({ userId: targetUserId, reportId: targetReportId })
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .lean();
+            console.log(`[RAG Fallback] Successfully retrieved ${chunks.length} chunks via fallback query.`);
+        }
+
+        // 2. Format the chunks into context
+        let formattedContext = `=== SELECTED REPORT TYPE: ${reportType} ===\n\n`;
+        formattedContext += `=== REPORT CONTEXT CHUNKS ===\n`;
+        if (chunks && chunks.length > 0) {
+            chunks.forEach((chunk, index) => {
+                formattedContext += `--- Chunk ${index + 1} ---\n${chunk.chunkText}\n\n`;
+            });
+        } else {
+            formattedContext += "No relevant medical report context chunks found.\n";
+        }
         
         const systemInstruction = [
             "You are MedInsight AI, a concise, precise, and professional medical assistant.",
-            "Your primary job is to answer questions specifically about the user's selected medical report.",
+            "Your job is to answer questions about the user's selected medical report and provide general health/lifestyle guidance.",
             "",
             "Here is the selected medical report context:",
             "-----------------------------------------",
@@ -117,31 +216,64 @@ const generateChatResponse = async (reportDoc, reportType, question, chatHistory
             "-----------------------------------------",
             "",
             "Rules you MUST strictly follow:",
-            "1. Answer questions ONLY using the information from the selected uploaded report provided above.",
-            "2. Do NOT combine, infer, or reuse data from any other reports, external medical knowledge, or previous conversations.",
-            "3. If a biomarker or test value is not present in the selected report, you MUST respond with: \"Not mentioned in this report.\"",
-            "4. Do NOT invent, assume, or hallucinate any biomarkers, reference ranges, statuses, diagnoses, or test results.",
+            "1. Use the retrieved report context provided above to answer questions about the user's specific test results, values, ranges, and status.",
+            "2. If a biomarker or test value is not present in the selected report context, and the user is asking about their specific report data, you MUST respond with: \"Not mentioned in this report.\" Only say information is unavailable when the user is asking about their specific report data and it is genuinely missing.",
+            "3. For general health, lifestyle, educational, or guidance questions (e.g. how to maintain healthy levels, what a biomarker means generally, dietary advice), answer using your own medical knowledge. You are NOT restricted to the retrieved context for these general questions.",
+            "4. Do NOT invent, assume, or hallucinate any specific biomarkers, reference ranges, statuses, diagnoses, or test results belonging to the user's actual report.",
             "5. First, note that the report type is identified as: " + reportType + ".",
             "6. Discuss ONLY tests and biomarkers that belong to this report type. Ignore and do not discuss unrelated medical information.",
             "7. Keep your answers direct, short, and focused on the user's query. Avoid all disclaimers, legal warnings, or generic medical remarks.",
-            "8. Do not format list elements with bold."
+            "8. Do not format list elements with bold.",
+            "9. When a biomarker name includes a qualifier or sample type (e.g. 'Urine WBC', 'Semen WBC', 'Blood WBC', 'Stool RBC'), always include that full qualified name in the answer — never shorten it to just the general biomarker name (e.g. never say just 'WBC' or 'RBC' on its own).",
+            "10. If the user's question is generic (e.g. 'What is my WBC count?') and the retrieved chunks contain multiple different qualified versions of that biomarker (e.g. both Urine WBC and Semen WBC), do not pick one arbitrarily — either list all matching types found with their values, or ask the user to clarify which one they mean."
         ].join("\n");
 
         const history = formatChatHistory(chatHistory);
 
-        const chat = ai.chats.create({
-            model: "gemini-3.6-flash",
-            history: history,
-            config: {
-                systemInstruction: systemInstruction
+        let attempt = 0;
+        const retries = 5;
+        const delay = 1000;
+
+        while (attempt <= retries) {
+            try {
+                const chat = ai.chats.create({
+                    model: "gemini-3.6-flash",
+                    history: history,
+                    config: {
+                        systemInstruction: systemInstruction
+                    }
+                });
+
+                const result = await chat.sendMessage({
+                    message: question
+                });
+
+                return result.text;
+            } catch (error) {
+                attempt++;
+                
+                // Check if error is retryable (429 rate limit or 503 service unavailable / high demand)
+                const isRetryable = error.status === 429 || error.status === 503 ||
+                                    (error.message && (
+                                        error.message.includes("429") || 
+                                        error.message.includes("RESOURCE_EXHAUSTED") ||
+                                        error.message.includes("503") || 
+                                        error.message.includes("UNAVAILABLE")
+                                    ));
+                
+                if (isRetryable && attempt <= retries) {
+                    const backoffDelay = delay * Math.pow(2, attempt - 1) + Math.random() * 500;
+                    console.warn(`[CHAT] Transient AI service error (status: ${error.status}). Retrying attempt ${attempt}/${retries} in ${Math.round(backoffDelay)}ms...`);
+                    await sleep(backoffDelay);
+                } else {
+                    console.error(`[CHAT] Failed to generate chat response on attempt ${attempt}:`, error);
+                    if (attempt > retries) {
+                        throw new Error(`Failed to generate chat response after ${retries} retries: ${error.message}`);
+                    }
+                    throw error;
+                }
             }
-        });
-
-        const result = await chat.sendMessage({
-            message: question
-        });
-
-        return result.text;
+        }
     } catch (error) {
         console.error("Error generating response from Gemini service:", error);
         throw error;

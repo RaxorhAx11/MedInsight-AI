@@ -17,7 +17,7 @@ requiredEnv.forEach((envVar) => {
 		console.error("========================================================\n");
 		process.exit(1);
 	}
-	if (envVar === "GEMINI_API_KEY" && val.trim().startsWith("AQ.Ab8RN")) {
+	if (envVar === "GEMINI_API_KEY" && val.trim() === "your_google_gemini_api_key") {
 		console.warn("\n========================================================");
 		console.warn("WARNING: GEMINI_API_KEY is a placeholder in environment variables. Gemini calls will fail.");
 		console.warn("========================================================\n");
